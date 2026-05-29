@@ -10,9 +10,10 @@ controls that don't do anything on your hardware.
 
 - **No YAML.** Setup and management are entirely in the HA UI.
 - **Two-tier model.** Register each physical remote once (its `ID1.ID2`
-  prefix), then add blinds under it by channel — mirroring how you'd
-  think about it in the Neo app, and avoiding repeated typing of the
-  prefix for blinds that live behind the same remote.
+  prefix), then add blinds under it by **blind code** (the digits after
+  the dash in the Neo app) — mirroring how you'd think about it in the
+  Neo app, and avoiding repeated typing of the prefix for blinds that
+  live behind the same remote.
 - **Type-aware UI.** When you add a blind you pick a type:
     - **Roller** — exposes Open / Close / Stop only. No tilt. No position
       slider.
@@ -72,12 +73,14 @@ Copy `custom_components/louvelite_blinds/` into your HA config's
       enter its `ID1.ID2` prefix. The prefix is the part of any blind
       code in the Neo app **before** the dash — e.g. for blind code
       `021.230-04`, the prefix is `021.230`.
-    - **Add a blind** — pick the remote, enter the channel (0-15), name,
-      optional room, type, close-time, and (optionally) the blind's motor
-      code if the Neo app shows one below the blind code.
-        - Channel **15** is the broadcast channel — pressing it on the
-          remote moves every blind paired to that remote at once. Add a
-          "channel 15" entry per remote if you want a single
+    - **Add a blind** — pick the remote, enter the **blind code** (0-15
+      — the digits after the dash in the Neo app's blind code; for
+      `021.230-04` the blind code is `4`), name, optional room, type,
+      close-time, and (optionally) the blind's motor code if the Neo app
+      shows one below the blind code.
+        - Code **15** is the broadcast code — pressing it on the remote
+          moves every blind paired to that remote at once. Add a
+          "code 15" entry per remote if you want a single
           `cover.kitchen_all` style entity.
 4. Repeat **Add a blind** for each blind.
 

@@ -389,7 +389,7 @@ class LouveliteOptionsFlow(OptionsFlow):
         choices = {
             b[CONF_BLIND_ID]: (
                 f"{b[CONF_NAME]} "
-                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} ch {b[CONF_CHANNEL]:02d}]"
+                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_CHANNEL]:02d}]"
             )
             for b in blinds
         }

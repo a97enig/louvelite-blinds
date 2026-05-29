@@ -63,12 +63,12 @@
       },
       "add_blind": {
         "title": "Add a blind",
-        "description": "Pick the remote, then enter the channel (0-15). Channel 15 broadcasts to every blind on the remote (room control).",
+        "description": "Pick the remote, then enter the blind code (0-15) — the digits after the dash in the Neo app's blind code (e.g. for 021.230-04 the blind code is 4). Code 15 broadcasts to every blind on the remote (room control).",
         "data": {
           "name": "Blind name",
           "room": "Room (optional)",
           "remote_id": "Remote",
-          "channel": "Channel (0-15)",
+          "channel": "Blind code (0-15)",
           "blind_type": "Blind type",
           "close_time": "Close time (seconds, used for travel estimation)",
           "motor_code": "Motor code (optional, from the Neo app — below the blind code)"
@@ -92,9 +92,9 @@
       "prefix_exists": "A remote with this prefix is already registered.",
       "name_required": "A blind name is required.",
       "remote_invalid": "Pick one of the registered remotes.",
-      "channel_invalid": "Channel must be a whole number between 0 and 15.",
+      "channel_invalid": "Blind code must be a whole number between 0 and 15.",
       "type_invalid": "Pick one of: roller, venetian, tdbu.",
-      "blind_exists": "A blind already exists on this remote+channel."
+      "blind_exists": "A blind already exists on this remote with that code."
     },
     "abort": {
       "no_remotes": "Add a remote first.",
