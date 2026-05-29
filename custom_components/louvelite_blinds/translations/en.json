@@ -6,7 +6,7 @@
         "description": "Enter the controller's IP, its 24-character hub ID (from the Neo app: Menu → Controllers), and pick a protocol.",
         "data": {
           "host": "Hub IP address",
-          "hub_id": "Hub ID (24 hex characters)",
+          "hub_id": "Hub ID (24 characters from the Neo app)",
           "protocol": "Protocol",
           "port": "Port",
           "motor_code": "Motor code (optional, only for some hub models)"
@@ -16,7 +16,7 @@
     "error": {
       "cannot_connect": "Could not reach the hub on that IP/port. Check the network and try again.",
       "host_required": "An IP address or hostname is required.",
-      "hub_id_invalid": "Hub ID must be 24 hex characters.",
+      "hub_id_invalid": "Hub ID must be exactly 24 characters with no spaces.",
       "protocol_invalid": "Protocol must be HTTP or TCP.",
       "port_invalid": "Port must be between 1 and 65535."
     },
@@ -41,7 +41,7 @@
         "title": "Edit hub connection",
         "data": {
           "host": "Hub IP address",
-          "hub_id": "Hub ID (24 hex characters)",
+          "hub_id": "Hub ID (24 characters from the Neo app)",
           "protocol": "Protocol",
           "port": "Port",
           "motor_code": "Motor code (optional)"
@@ -85,7 +85,7 @@
     "error": {
       "cannot_connect": "Could not reach the hub.",
       "host_required": "An IP address or hostname is required.",
-      "hub_id_invalid": "Hub ID must be 24 hex characters.",
+      "hub_id_invalid": "Hub ID must be exactly 24 characters with no spaces.",
       "protocol_invalid": "Protocol must be HTTP or TCP.",
       "port_invalid": "Port must be between 1 and 65535.",
       "label_required": "A name is required.",
