@@ -1,0 +1,12 @@
+{
+  "domain": "louvelite_blinds",
+  "name": "Louvelite Blinds (Neo Smart Controller)",
+  "version": "0.1.0",
+  "documentation": "https://github.com/mkitchin/louvelite-blinds",
+  "issue_tracker": "https://github.com/mkitchin/louvelite-blinds/issues",
+  "codeowners": ["@mkitchin"],
+  "config_flow": true,
+  "iot_class": "local_polling",
+  "integration_type": "hub",
+  "requirements": []
+}

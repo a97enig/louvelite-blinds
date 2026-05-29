@@ -1,0 +1,105 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Neo Smart Controller",
+        "description": "Enter the controller's IP, its 24-character hub ID (from the Neo app: Menu → Controllers), and pick a protocol.",
+        "data": {
+          "host": "Hub IP address",
+          "hub_id": "Hub ID (24 hex characters)",
+          "protocol": "Protocol",
+          "port": "Port",
+          "motor_code": "Motor code (optional, only for some hub models)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the hub on that IP/port. Check the network and try again.",
+      "host_required": "An IP address or hostname is required.",
+      "hub_id_invalid": "Hub ID must be 24 hex characters.",
+      "protocol_invalid": "Protocol must be HTTP or TCP.",
+      "port_invalid": "Port must be between 1 and 65535."
+    },
+    "abort": {
+      "already_configured": "This hub is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Louvelite Blinds",
+        "description": "Manage remotes and blinds.",
+        "menu_options": {
+          "add_remote": "Add a remote",
+          "remove_remote": "Remove a remote",
+          "add_blind": "Add a blind",
+          "remove_blind": "Remove a blind",
+          "edit_hub": "Edit hub connection"
+        }
+      },
+      "edit_hub": {
+        "title": "Edit hub connection",
+        "data": {
+          "host": "Hub IP address",
+          "hub_id": "Hub ID (24 hex characters)",
+          "protocol": "Protocol",
+          "port": "Port",
+          "motor_code": "Motor code (optional)"
+        }
+      },
+      "add_remote": {
+        "title": "Add a remote",
+        "description": "Enter the remote's ID1.ID2 prefix (e.g. {example}). Each remote registers itself with the hub by pressing its pairing button while the hub is in learning mode; the resulting prefix is shown in the Neo app's blind code (the part before the dash). Model is cosmetic — purely for your own bookkeeping.",
+        "data": {
+          "label": "Remote name",
+          "prefix": "ID1.ID2 prefix",
+          "model": "Remote model (optional, e.g. RF1944)"
+        }
+      },
+      "remove_remote": {
+        "title": "Remove a remote",
+        "description": "Removing a remote also removes all blinds attached to it.",
+        "data": {
+          "remote_id": "Remote"
+        }
+      },
+      "add_blind": {
+        "title": "Add a blind",
+        "description": "Pick the remote, then enter the channel (01-15). Channel 15 broadcasts to every blind on the remote (room control).",
+        "data": {
+          "name": "Blind name",
+          "room": "Room (optional)",
+          "remote_id": "Remote",
+          "channel": "Channel (1-15)",
+          "blind_type": "Blind type",
+          "close_time": "Close time (seconds, used for travel estimation)"
+        }
+      },
+      "remove_blind": {
+        "title": "Remove a blind",
+        "data": {
+          "blind_id": "Blind"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the hub.",
+      "host_required": "An IP address or hostname is required.",
+      "hub_id_invalid": "Hub ID must be 24 hex characters.",
+      "protocol_invalid": "Protocol must be HTTP or TCP.",
+      "port_invalid": "Port must be between 1 and 65535.",
+      "label_required": "A name is required.",
+      "prefix_invalid": "Use the format \"ID1.ID2\" with two numbers separated by a dot (e.g. 21.230).",
+      "prefix_exists": "A remote with this prefix is already registered.",
+      "name_required": "A blind name is required.",
+      "remote_invalid": "Pick one of the registered remotes.",
+      "channel_invalid": "Channel must be between 1 and 15.",
+      "type_invalid": "Pick one of: roller, venetian, tdbu.",
+      "blind_exists": "A blind already exists on this remote+channel."
+    },
+    "abort": {
+      "no_remotes": "Add a remote first.",
+      "no_blinds": "There are no blinds to remove."
+    }
+  }
+}
