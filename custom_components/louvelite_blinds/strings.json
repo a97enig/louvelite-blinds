@@ -8,8 +8,7 @@
           "host": "Hub IP address",
           "hub_id": "Hub ID (24 characters from the Neo app)",
           "protocol": "Protocol",
-          "port": "Port",
-          "motor_code": "Motor code (optional, only for some hub models)"
+          "port": "Port"
         }
       }
     },
@@ -43,8 +42,7 @@
           "host": "Hub IP address",
           "hub_id": "Hub ID (24 characters from the Neo app)",
           "protocol": "Protocol",
-          "port": "Port",
-          "motor_code": "Motor code (optional)"
+          "port": "Port"
         }
       },
       "add_remote": {
@@ -72,7 +70,8 @@
           "remote_id": "Remote",
           "channel": "Channel (1-15)",
           "blind_type": "Blind type",
-          "close_time": "Close time (seconds, used for travel estimation)"
+          "close_time": "Close time (seconds, used for travel estimation)",
+          "motor_code": "Motor code (optional, from the Neo app — below the blind code)"
         }
       },
       "remove_blind": {

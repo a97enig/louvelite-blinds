@@ -98,7 +98,6 @@ def _hub_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
                 CONF_PROTOCOL, default=d.get(CONF_PROTOCOL, DEFAULT_PROTOCOL)
             ): vol.In([PROTOCOL_HTTP, PROTOCOL_TCP]),
             vol.Required(CONF_PORT, default=d.get(CONF_PORT, DEFAULT_PORT)): int,
-            vol.Optional(CONF_MOTOR_CODE, default=d.get(CONF_MOTOR_CODE, "")): str,
         }
     )
 
@@ -126,7 +125,6 @@ class LouveliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     hub_id=cleaned[CONF_HUB_ID],
                     protocol=cleaned[CONF_PROTOCOL],
                     port=cleaned[CONF_PORT],
-                    motor_code=cleaned.get(CONF_MOTOR_CODE) or None,
                     http_session=session,
                 )
                 try:
@@ -172,9 +170,6 @@ def _validate_hub_input(user_input: dict[str, Any]) -> tuple[dict[str, Any], dic
     port = cleaned.get(CONF_PORT)
     if not isinstance(port, int) or port <= 0 or port > 65535:
         errors[CONF_PORT] = "port_invalid"
-
-    motor = (cleaned.get(CONF_MOTOR_CODE) or "").strip().lower()
-    cleaned[CONF_MOTOR_CODE] = motor
 
     return cleaned, errors
 
@@ -297,6 +292,7 @@ class LouveliteOptionsFlow(OptionsFlow):
             channel = user_input.get(CONF_CHANNEL)
             blind_type = user_input.get(CONF_BLIND_TYPE)
             close_time = user_input.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME)
+            motor_code = (user_input.get(CONF_MOTOR_CODE) or "").strip().lower()
 
             if not name:
                 errors[CONF_NAME] = "name_required"
@@ -322,6 +318,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                     CONF_CHANNEL: channel,
                     CONF_BLIND_TYPE: blind_type,
                     CONF_CLOSE_TIME: int(close_time),
+                    CONF_MOTOR_CODE: motor_code,
                 }
                 return self._save_options(blinds=self._blinds + [new_blind])
         defaults = user_input or {}
@@ -346,6 +343,10 @@ class LouveliteOptionsFlow(OptionsFlow):
                         CONF_CLOSE_TIME,
                         default=defaults.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME),
                     ): vol.All(int, vol.Range(min=1, max=600)),
+                    vol.Optional(
+                        CONF_MOTOR_CODE,
+                        default=defaults.get(CONF_MOTOR_CODE, ""),
+                    ): str,
                 }
             ),
             errors=errors,

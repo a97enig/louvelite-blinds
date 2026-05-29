@@ -11,7 +11,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import (
     CONF_HOST,
     CONF_HUB_ID,
-    CONF_MOTOR_CODE,
     CONF_PORT,
     CONF_PROTOCOL,
     DEFAULT_PORT,
@@ -34,7 +33,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hub_id=data[CONF_HUB_ID],
         protocol=data.get(CONF_PROTOCOL, DEFAULT_PROTOCOL),
         port=data.get(CONF_PORT, DEFAULT_PORT),
-        motor_code=data.get(CONF_MOTOR_CODE) or None,
         http_session=async_get_clientsession(hass)
         if data.get(CONF_PROTOCOL, DEFAULT_PROTOCOL) == PROTOCOL_HTTP
         else None,

@@ -67,15 +67,14 @@ Copy `custom_components/louvelite_blinds/` into your HA config's
       `440036000447393032323330`.
     - **Protocol** — TCP (default) or HTTP.
     - **Port** — 8839 for TCP, 8838 for HTTP.
-    - **Motor code** — leave blank unless your hub explicitly requires
-      one (most don't).
 3. After save, open the integration's **Configure** page. From there:
     - **Add a remote** — give it a name (e.g. "Living-room remote") and
       enter its `ID1.ID2` prefix. The prefix is the part of any blind
       code in the Neo app **before** the dash — e.g. for blind code
       `021.230-04`, the prefix is `021.230`.
     - **Add a blind** — pick the remote, enter the channel (1-15), name,
-      optional room, type, and close-time.
+      optional room, type, close-time, and (optionally) the blind's motor
+      code if the Neo app shows one below the blind code.
         - Channel **15** is the broadcast channel — pressing it on the
           remote moves every blind paired to that remote at once. Add a
           "channel 15" entry per remote if you want a single
@@ -96,7 +95,8 @@ fully open to fully closed and use that number.
 | Config flow + Options flow | Yes | No |
 | Per-blind type selector | Roller / Venetian / TDBU | One implementation; tilt + percent always shown |
 | Percentage open | Not exposed | Estimated from `close_time` |
-| `motor_code` / `percent_support` / `parent_group` / `rail` | All hidden behind blind-type | All required in YAML |
+| `motor_code` | Per-blind, optional | Per-blind, required in YAML |
+| `percent_support` / `parent_group` / `rail` | Hidden behind blind-type | Required in YAML |
 | Group commands | Add a channel-15 blind | `parent_group` plus aggregation logic |
 
 If you have venetians or use percentage positioning seriously, the

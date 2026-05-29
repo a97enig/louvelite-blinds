@@ -35,6 +35,7 @@ from .const import (
     CONF_BLIND_TYPE,
     CONF_BLINDS,
     CONF_CHANNEL,
+    CONF_MOTOR_CODE,
     CONF_NAME,
     CONF_PREFIX,
     CONF_REMOTE_ID,
@@ -109,6 +110,7 @@ class _NeoCoverBase(CoverEntity):
         self._blind = blind
         self._remote = remote
         self._blind_code = blind_code
+        self._motor_code = (blind.get(CONF_MOTOR_CODE) or "").strip().lower() or None
         # Assume open until commanded otherwise so the UI shows a meaningful state.
         self._state_open: bool = True
 
@@ -131,7 +133,7 @@ class _NeoCoverBase(CoverEntity):
 
     async def _send(self, command: str) -> bool:
         try:
-            await self._hub.async_send(self._blind_code, command)
+            await self._hub.async_send(self._blind_code, command, self._motor_code)
             return True
         except NeoHubError as err:
             _LOGGER.error(

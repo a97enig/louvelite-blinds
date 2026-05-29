@@ -41,14 +41,12 @@ class NeoHub:
         hub_id: str,
         protocol: str,
         port: int,
-        motor_code: Optional[str],
         http_session: Optional[aiohttp.ClientSession],
     ) -> None:
         self._host = host
         self._hub_id = hub_id
         self._protocol = protocol.lower()
         self._port = int(port)
-        self._motor_code = motor_code
         self._session = http_session
         self._send_lock = asyncio.Lock()
         self._last_send = 0.0
@@ -71,9 +69,19 @@ class NeoHub:
         """Build the wire address for a blind: '021.230-04'."""
         return f"{prefix}-{channel:02d}"
 
-    async def async_send(self, blind_code: str, command: str) -> None:
-        """Send a single command to a blind (or group)."""
-        suffix = f"!{self._motor_code}" if self._motor_code else ""
+    async def async_send(
+        self,
+        blind_code: str,
+        command: str,
+        motor_code: Optional[str] = None,
+    ) -> None:
+        """Send a single command to a blind (or group).
+
+        motor_code is optional and per-blind; when set it is appended
+        to the command as `!<motor_code>` per the Neo Open Local
+        protocol.
+        """
+        suffix = f"!{motor_code}" if motor_code else ""
         payload = f"{blind_code}-{command}{suffix}"
         async with self._send_lock:
             # Space commands out so the hub keeps up.

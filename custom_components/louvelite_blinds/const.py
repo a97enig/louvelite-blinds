@@ -7,7 +7,6 @@ CONF_HOST = "host"
 CONF_HUB_ID = "hub_id"
 CONF_PROTOCOL = "protocol"
 CONF_PORT = "port"
-CONF_MOTOR_CODE = "motor_code"
 
 # Collection keys held in entry.options
 CONF_REMOTES = "remotes"
@@ -26,6 +25,7 @@ CONF_ROOM = "room"
 CONF_CHANNEL = "channel"              # 01-15 (15 = group/room broadcast)
 CONF_BLIND_TYPE = "blind_type"
 CONF_CLOSE_TIME = "close_time"
+CONF_MOTOR_CODE = "motor_code"        # optional, per-blind, e.g. "bf"
 
 # Channel limits (per Neo Open Local protocol)
 MIN_CHANNEL = 1
