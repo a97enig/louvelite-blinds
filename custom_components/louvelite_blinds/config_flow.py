@@ -79,7 +79,7 @@ from .hub import NeoHub, NeoHubError
 _LOGGER = logging.getLogger(__name__)
 
 PREFIX_RE = re.compile(r"^\d{1,3}\.\d{1,3}$")
-HUB_ID_RE = re.compile(r"^\S{24}$")
+HUB_ID_RE = re.compile(r"^\S{8,64}$")
 
 
 def _normalise_prefix(prefix: str) -> str:

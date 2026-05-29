@@ -62,9 +62,9 @@ Copy `custom_components/louvelite_blinds/` into your HA config's
    **Louvelite Blinds**.
 2. Enter:
     - **Hub IP address** — e.g. `192.168.1.50`.
-    - **Hub ID** — 24-character ID from the Neo app
-      (Menu → Controllers → tap the controller). Looks like
-      `440036000447393032323330`.
+    - **Hub ID** — the ID from the Neo app
+      (Menu → Controllers → tap the controller). Length varies between
+      hubs; alphanumeric mixed case is normal.
     - **Protocol** — TCP (default) or HTTP.
     - **Port** — 8839 for TCP, 8838 for HTTP.
 3. After save, open the integration's **Configure** page. From there:
