@@ -27,8 +27,10 @@ CONF_BLIND_TYPE = "blind_type"
 CONF_CLOSE_TIME = "close_time"
 CONF_MOTOR_CODE = "motor_code"        # optional, per-blind, e.g. "bf"
 
-# Channel limits (per Neo Open Local protocol)
-MIN_CHANNEL = 1
+# Channel limits — docs say 1-14 individual + 15 group, but some hubs
+# accept 0 for special cases so we allow 0-15 and let the hub reject
+# anything it doesn't like.
+MIN_CHANNEL = 0
 MAX_CHANNEL = 15
 GROUP_CHANNEL = 15
 

@@ -14,6 +14,9 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
@@ -72,6 +75,25 @@ BLIND_TYPE_SELECTOR = SelectSelector(
             ),
         ],
         mode=SelectSelectorMode.DROPDOWN,
+    )
+)
+
+CHANNEL_SELECTOR = NumberSelector(
+    NumberSelectorConfig(
+        min=MIN_CHANNEL,
+        max=MAX_CHANNEL,
+        step=1,
+        mode=NumberSelectorMode.BOX,
+    )
+)
+
+CLOSE_TIME_SELECTOR = NumberSelector(
+    NumberSelectorConfig(
+        min=1,
+        max=600,
+        step=1,
+        mode=NumberSelectorMode.BOX,
+        unit_of_measurement="seconds",
     )
 )
 from .hub import NeoHub, NeoHubError
@@ -289,16 +311,23 @@ class LouveliteOptionsFlow(OptionsFlow):
             name = (user_input.get(CONF_NAME) or "").strip()
             room = (user_input.get(CONF_ROOM) or "").strip()
             rid = user_input.get(CONF_REMOTE_ID)
-            channel = user_input.get(CONF_CHANNEL)
             blind_type = user_input.get(CONF_BLIND_TYPE)
-            close_time = user_input.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME)
             motor_code = (user_input.get(CONF_MOTOR_CODE) or "").strip().lower()
+
+            try:
+                channel = int(user_input.get(CONF_CHANNEL))
+            except (TypeError, ValueError):
+                channel = None
+            try:
+                close_time = int(user_input.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME))
+            except (TypeError, ValueError):
+                close_time = DEFAULT_CLOSE_TIME
 
             if not name:
                 errors[CONF_NAME] = "name_required"
             if rid not in remote_choices:
                 errors[CONF_REMOTE_ID] = "remote_invalid"
-            if not isinstance(channel, int) or channel < MIN_CHANNEL or channel > MAX_CHANNEL:
+            if channel is None or channel < MIN_CHANNEL or channel > MAX_CHANNEL:
                 errors[CONF_CHANNEL] = "channel_invalid"
             if blind_type not in BLIND_TYPES:
                 errors[CONF_BLIND_TYPE] = "type_invalid"
@@ -317,7 +346,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                     CONF_REMOTE_ID: rid,
                     CONF_CHANNEL: channel,
                     CONF_BLIND_TYPE: blind_type,
-                    CONF_CLOSE_TIME: int(close_time),
+                    CONF_CLOSE_TIME: close_time,
                     CONF_MOTOR_CODE: motor_code,
                 }
                 return self._save_options(blinds=self._blinds + [new_blind])
@@ -334,7 +363,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                     ): vol.In(remote_choices),
                     vol.Required(
                         CONF_CHANNEL, default=defaults.get(CONF_CHANNEL, 1)
-                    ): vol.All(int, vol.Range(min=MIN_CHANNEL, max=MAX_CHANNEL)),
+                    ): CHANNEL_SELECTOR,
                     vol.Required(
                         CONF_BLIND_TYPE,
                         default=defaults.get(CONF_BLIND_TYPE, BLIND_TYPE_ROLLER),
@@ -342,7 +371,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                     vol.Required(
                         CONF_CLOSE_TIME,
                         default=defaults.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME),
-                    ): vol.All(int, vol.Range(min=1, max=600)),
+                    ): CLOSE_TIME_SELECTOR,
                     vol.Optional(
                         CONF_MOTOR_CODE,
                         default=defaults.get(CONF_MOTOR_CODE, ""),

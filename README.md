@@ -72,7 +72,7 @@ Copy `custom_components/louvelite_blinds/` into your HA config's
       enter its `ID1.ID2` prefix. The prefix is the part of any blind
       code in the Neo app **before** the dash — e.g. for blind code
       `021.230-04`, the prefix is `021.230`.
-    - **Add a blind** — pick the remote, enter the channel (1-15), name,
+    - **Add a blind** — pick the remote, enter the channel (0-15), name,
       optional room, type, close-time, and (optionally) the blind's motor
       code if the Neo app shows one below the blind code.
         - Channel **15** is the broadcast channel — pressing it on the
