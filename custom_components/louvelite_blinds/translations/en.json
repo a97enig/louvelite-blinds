@@ -123,7 +123,8 @@
     },
     "abort": {
       "no_remotes": "Add a remote first.",
-      "no_blinds": "There are no blinds to remove."
+      "no_blinds": "There are no blinds to remove.",
+      "no_blinds_to_edit": "Add a blind first before you can edit one."
     }
   }
 }

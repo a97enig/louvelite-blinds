@@ -112,6 +112,13 @@ def _normalise_prefix(prefix: str) -> str:
     return f"{int(a):03d}.{int(b):03d}"
 
 
+def _hub_title(data: dict[str, Any]) -> str:
+    """Render a hub's config-entry title: `<name> (<ip>)`."""
+    name = (data.get(CONF_HUB_NAME) or "").strip() or DEFAULT_HUB_NAME
+    host = (data.get(CONF_HOST) or "").strip()
+    return f"{name} ({host})" if host else name
+
+
 def _hub_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
     d = defaults or {}
     return vol.Schema(
@@ -161,7 +168,7 @@ class LouveliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "cannot_connect"
                 else:
                     return self.async_create_entry(
-                        title=cleaned[CONF_HUB_NAME],
+                        title=_hub_title(cleaned),
                         data=cleaned,
                         options={CONF_REMOTES: [], CONF_BLINDS: []},
                     )
@@ -252,7 +259,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                 self.hass.config_entries.async_update_entry(
                     self._entry,
                     data=cleaned,
-                    title=cleaned[CONF_HUB_NAME],
+                    title=_hub_title(cleaned),
                 )
                 return self.async_create_entry(title="", data=dict(self._entry.options))
         return self.async_show_form(
@@ -400,7 +407,7 @@ class LouveliteOptionsFlow(OptionsFlow):
     async def async_step_edit_blind(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         blinds = self._blinds
         if not blinds:
-            return self.async_abort(reason="no_blinds")
+            return self.async_abort(reason="no_blinds_to_edit")
         remote_labels = {r[CONF_REMOTE_ID]: r[CONF_REMOTE_LABEL] for r in self._remotes}
         choices = {
             b[CONF_BLIND_ID]: (
@@ -424,7 +431,7 @@ class LouveliteOptionsFlow(OptionsFlow):
         blinds = self._blinds
         blind = next((b for b in blinds if b[CONF_BLIND_ID] == bid), None)
         if blind is None:
-            return self.async_abort(reason="no_blinds")
+            return self.async_abort(reason="no_blinds_to_edit")
 
         remotes = self._remotes
         if not remotes:
