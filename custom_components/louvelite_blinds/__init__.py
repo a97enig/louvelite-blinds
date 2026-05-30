@@ -70,6 +70,11 @@ async def async_remove_config_entry_device(
     the blind out of the entry's options; the update listener picks it
     up and reloads, which removes any covers (both rails for TDBU) the
     device was hosting.
+
+    The options write is deferred onto the event loop so it lands
+    *after* HA finishes removing the device from the registry — if we
+    update synchronously, the resulting reload races with HA's own
+    device cleanup and the device can linger until restart.
     """
     prefix = f"{entry.entry_id}:"
     blind_id = next(
@@ -89,7 +94,10 @@ async def async_remove_config_entry_device(
         # Device isn't backed by anything we know about — treat as removable.
         return True
 
-    new_options = dict(entry.options)
-    new_options[CONF_BLINDS] = kept
-    hass.config_entries.async_update_entry(entry, options=new_options)
+    async def _drop_blind() -> None:
+        new_options = dict(entry.options)
+        new_options[CONF_BLINDS] = kept
+        hass.config_entries.async_update_entry(entry, options=new_options)
+
+    hass.async_create_task(_drop_blind())
     return True
