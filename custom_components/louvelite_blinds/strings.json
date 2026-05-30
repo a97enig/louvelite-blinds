@@ -41,6 +41,7 @@
       "edit_hub": {
         "title": "Edit hub connection",
         "data": {
+          "hub_name": "Hub name",
           "host": "Hub IP address",
           "hub_id": "Hub ID (from the Neo app)",
           "protocol": "Protocol",
