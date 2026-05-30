@@ -34,7 +34,7 @@ from .const import (
     CONF_BLIND_ID,
     CONF_BLIND_TYPE,
     CONF_BLINDS,
-    CONF_CHANNEL,
+    CONF_BLIND_CODE,
     CONF_MOTOR_CODE,
     CONF_NAME,
     CONF_PREFIX,
@@ -70,7 +70,7 @@ async def async_setup_entry(
             continue
         blind_type = blind[CONF_BLIND_TYPE]
         prefix = remote[CONF_PREFIX]
-        channel = blind[CONF_CHANNEL]
+        channel = blind[CONF_BLIND_CODE]
         blind_code = NeoHub.format_blind_code(prefix, channel)
 
         if blind_type == BLIND_TYPE_TDBU:

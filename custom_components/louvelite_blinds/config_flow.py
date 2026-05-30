@@ -28,10 +28,10 @@ from .const import (
     BLIND_TYPE_TDBU,
     BLIND_TYPE_VENETIAN,
     BLIND_TYPES,
+    CONF_BLIND_CODE,
     CONF_BLIND_ID,
     CONF_BLIND_TYPE,
     CONF_BLINDS,
-    CONF_CHANNEL,
     CONF_CLOSE_TIME,
     CONF_HOST,
     CONF_HUB_ID,
@@ -58,6 +58,7 @@ from .const import (
     PROTOCOL_HTTP,
     PROTOCOL_TCP,
 )
+from .hub import NeoHub, NeoHubError
 
 
 BLIND_TYPE_SELECTOR = SelectSelector(
@@ -98,7 +99,6 @@ CLOSE_TIME_SELECTOR = NumberSelector(
         unit_of_measurement="seconds",
     )
 )
-from .hub import NeoHub, NeoHubError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -132,7 +132,7 @@ def _hub_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
 class LouveliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Initial setup: hub connection details."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         errors: dict[str, str] = {}
@@ -331,7 +331,7 @@ class LouveliteOptionsFlow(OptionsFlow):
             motor_code = (user_input.get(CONF_MOTOR_CODE) or "").strip().lower()
 
             try:
-                channel = int(user_input.get(CONF_CHANNEL))
+                channel = int(user_input.get(CONF_BLIND_CODE))
             except (TypeError, ValueError):
                 channel = None
             try:
@@ -344,23 +344,23 @@ class LouveliteOptionsFlow(OptionsFlow):
             if rid not in remote_choices:
                 errors[CONF_REMOTE_ID] = "remote_invalid"
             if channel is None or channel < MIN_CHANNEL or channel > MAX_CHANNEL:
-                errors[CONF_CHANNEL] = "channel_invalid"
+                errors[CONF_BLIND_CODE] = "blind_code_invalid"
             if blind_type not in BLIND_TYPES:
                 errors[CONF_BLIND_TYPE] = "type_invalid"
             if not errors:
                 # Prevent duplicate (remote, channel) entries.
                 if any(
-                    b[CONF_REMOTE_ID] == rid and b[CONF_CHANNEL] == channel
+                    b[CONF_REMOTE_ID] == rid and b[CONF_BLIND_CODE] == channel
                     for b in self._blinds
                 ):
-                    errors[CONF_CHANNEL] = "blind_exists"
+                    errors[CONF_BLIND_CODE] = "blind_exists"
             if not errors:
                 new_blind = {
                     CONF_BLIND_ID: uuid.uuid4().hex,
                     CONF_NAME: name,
                     CONF_ROOM: room,
                     CONF_REMOTE_ID: rid,
-                    CONF_CHANNEL: channel,
+                    CONF_BLIND_CODE: channel,
                     CONF_BLIND_TYPE: blind_type,
                     CONF_CLOSE_TIME: close_time,
                     CONF_MOTOR_CODE: motor_code,
@@ -378,7 +378,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                         default=defaults.get(CONF_REMOTE_ID, next(iter(remote_choices))),
                     ): vol.In(remote_choices),
                     vol.Required(
-                        CONF_CHANNEL, default=defaults.get(CONF_CHANNEL, 1)
+                        CONF_BLIND_CODE, default=defaults.get(CONF_BLIND_CODE, 1)
                     ): CHANNEL_SELECTOR,
                     vol.Required(
                         CONF_BLIND_TYPE,
@@ -405,7 +405,7 @@ class LouveliteOptionsFlow(OptionsFlow):
         choices = {
             b[CONF_BLIND_ID]: (
                 f"{b[CONF_NAME]} "
-                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_CHANNEL]:02d}]"
+                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_BLIND_CODE]:02d}]"
             )
             for b in blinds
         }
@@ -442,7 +442,7 @@ class LouveliteOptionsFlow(OptionsFlow):
             motor_code = (user_input.get(CONF_MOTOR_CODE) or "").strip().lower()
 
             try:
-                channel = int(user_input.get(CONF_CHANNEL))
+                channel = int(user_input.get(CONF_BLIND_CODE))
             except (TypeError, ValueError):
                 channel = None
             try:
@@ -455,16 +455,16 @@ class LouveliteOptionsFlow(OptionsFlow):
             if rid not in remote_choices:
                 errors[CONF_REMOTE_ID] = "remote_invalid"
             if channel is None or channel < MIN_CHANNEL or channel > MAX_CHANNEL:
-                errors[CONF_CHANNEL] = "channel_invalid"
+                errors[CONF_BLIND_CODE] = "blind_code_invalid"
             if blind_type not in BLIND_TYPES:
                 errors[CONF_BLIND_TYPE] = "type_invalid"
             if not errors and any(
                 b[CONF_BLIND_ID] != bid
                 and b[CONF_REMOTE_ID] == rid
-                and b[CONF_CHANNEL] == channel
+                and b[CONF_BLIND_CODE] == channel
                 for b in blinds
             ):
-                errors[CONF_CHANNEL] = "blind_exists"
+                errors[CONF_BLIND_CODE] = "blind_exists"
 
             if not errors:
                 updated = {
@@ -472,7 +472,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                     CONF_NAME: name,
                     CONF_ROOM: room,
                     CONF_REMOTE_ID: rid,
-                    CONF_CHANNEL: channel,
+                    CONF_BLIND_CODE: channel,
                     CONF_BLIND_TYPE: blind_type,
                     CONF_CLOSE_TIME: close_time,
                     CONF_MOTOR_CODE: motor_code,
@@ -493,7 +493,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                         default=defaults.get(CONF_REMOTE_ID, next(iter(remote_choices))),
                     ): vol.In(remote_choices),
                     vol.Required(
-                        CONF_CHANNEL, default=defaults.get(CONF_CHANNEL, 1)
+                        CONF_BLIND_CODE, default=defaults.get(CONF_BLIND_CODE, 1)
                     ): CHANNEL_SELECTOR,
                     vol.Required(
                         CONF_BLIND_TYPE,
@@ -521,7 +521,7 @@ class LouveliteOptionsFlow(OptionsFlow):
         choices = {
             b[CONF_BLIND_ID]: (
                 f"{b[CONF_NAME]} "
-                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_CHANNEL]:02d}]"
+                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_BLIND_CODE]:02d}]"
             )
             for b in blinds
         }

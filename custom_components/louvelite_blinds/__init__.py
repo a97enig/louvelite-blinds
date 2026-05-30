@@ -56,6 +56,21 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Migrate older config entries forward."""
+    if entry.version == 1:
+        # v1 -> v2: rename per-blind "channel" key to "blind_code".
+        options = dict(entry.options)
+        blinds = options.get(CONF_BLINDS, [])
+        if any("channel" in b for b in blinds):
+            options[CONF_BLINDS] = [
+                ({**b, "blind_code": b.pop("channel")} if "channel" in b else b)
+                for b in blinds
+            ]
+        hass.config_entries.async_update_entry(entry, options=options, version=2)
+    return True
+
+
 async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload entities when options change (remote/blind added or removed)."""
     await hass.config_entries.async_reload(entry.entry_id)

@@ -25,7 +25,9 @@ CONF_REMOTE_MODEL = "model"           # optional, e.g. "RF1944" — cosmetic onl
 CONF_BLIND_ID = "blind_id"            # internal stable id
 CONF_NAME = "name"
 CONF_ROOM = "room"
-CONF_CHANNEL = "channel"              # 01-15 (15 = group/room broadcast)
+CONF_BLIND_CODE = "blind_code"        # 01-15 (15 = group/room broadcast); per
+                                      # Neo app vocabulary, this is the digits
+                                      # after the dash in the full blind code
 CONF_BLIND_TYPE = "blind_type"
 CONF_CLOSE_TIME = "close_time"
 CONF_MOTOR_CODE = "motor_code"        # optional, per-blind, e.g. "bf"
