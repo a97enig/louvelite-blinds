@@ -35,6 +35,7 @@ from .const import (
     CONF_CLOSE_TIME,
     CONF_HOST,
     CONF_HUB_ID,
+    CONF_HUB_NAME,
     CONF_MOTOR_CODE,
     CONF_NAME,
     CONF_PORT,
@@ -47,6 +48,7 @@ from .const import (
     CONF_ROOM,
     DEFAULT_CLOSE_TIME,
     DEFAULT_HTTP_PORT,
+    DEFAULT_HUB_NAME,
     DEFAULT_PORT,
     DEFAULT_PROTOCOL,
     DEFAULT_TCP_PORT,
@@ -114,6 +116,9 @@ def _hub_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
     d = defaults or {}
     return vol.Schema(
         {
+            vol.Required(
+                CONF_HUB_NAME, default=d.get(CONF_HUB_NAME, DEFAULT_HUB_NAME)
+            ): str,
             vol.Required(CONF_HOST, default=d.get(CONF_HOST, "")): str,
             vol.Required(CONF_HUB_ID, default=d.get(CONF_HUB_ID, "")): str,
             vol.Required(
@@ -156,7 +161,7 @@ class LouveliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "cannot_connect"
                 else:
                     return self.async_create_entry(
-                        title=f"Neo Hub @ {cleaned[CONF_HOST]}",
+                        title=cleaned[CONF_HUB_NAME],
                         data=cleaned,
                         options={CONF_REMOTES: [], CONF_BLINDS: []},
                     )
@@ -173,6 +178,11 @@ class LouveliteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 def _validate_hub_input(user_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
     errors: dict[str, str] = {}
     cleaned = dict(user_input)
+
+    hub_name = (cleaned.get(CONF_HUB_NAME) or "").strip()
+    if not hub_name:
+        errors[CONF_HUB_NAME] = "hub_name_required"
+    cleaned[CONF_HUB_NAME] = hub_name
 
     host = (cleaned.get(CONF_HOST) or "").strip()
     if not host:
@@ -237,7 +247,11 @@ class LouveliteOptionsFlow(OptionsFlow):
         if user_input is not None:
             cleaned, errors = _validate_hub_input(user_input)
             if not errors:
-                self.hass.config_entries.async_update_entry(self._entry, data=cleaned)
+                self.hass.config_entries.async_update_entry(
+                    self._entry,
+                    data=cleaned,
+                    title=cleaned[CONF_HUB_NAME],
+                )
                 return self.async_create_entry(title="", data=dict(self._entry.options))
         return self.async_show_form(
             step_id="edit_hub",

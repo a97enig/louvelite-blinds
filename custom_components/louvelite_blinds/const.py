@@ -3,10 +3,13 @@
 DOMAIN = "louvelite_blinds"
 
 # Hub config keys
+CONF_HUB_NAME = "hub_name"
 CONF_HOST = "host"
 CONF_HUB_ID = "hub_id"
 CONF_PROTOCOL = "protocol"
 CONF_PORT = "port"
+
+DEFAULT_HUB_NAME = "Neo Smart Controller"
 
 # Collection keys held in entry.options
 CONF_REMOTES = "remotes"

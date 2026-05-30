@@ -3,8 +3,9 @@
     "step": {
       "user": {
         "title": "Neo Smart Controller",
-        "description": "Enter the controller's IP and its hub ID (from the Neo app: Menu → Controllers), and pick a protocol.",
+        "description": "Give the hub a name, then enter its IP and its hub ID (from the Neo app: Menu → Controllers), and pick a protocol.",
         "data": {
+          "hub_name": "Hub name",
           "host": "Hub IP address",
           "hub_id": "Hub ID (from the Neo app)",
           "protocol": "Protocol",
@@ -14,6 +15,7 @@
     },
     "error": {
       "cannot_connect": "Could not reach the hub on that IP/port. Check the network and try again.",
+      "hub_name_required": "Give the hub a name.",
       "host_required": "An IP address or hostname is required.",
       "hub_id_invalid": "Hub ID looks wrong (must be between 8 and 64 characters, no spaces).",
       "protocol_invalid": "Protocol must be HTTP or TCP.",
@@ -83,6 +85,7 @@
     },
     "error": {
       "cannot_connect": "Could not reach the hub.",
+      "hub_name_required": "Give the hub a name.",
       "host_required": "An IP address or hostname is required.",
       "hub_id_invalid": "Hub ID looks wrong (must be between 8 and 64 characters, no spaces).",
       "protocol_invalid": "Protocol must be HTTP or TCP.",

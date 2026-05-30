@@ -62,6 +62,9 @@ Copy `custom_components/louvelite_blinds/` into your HA config's
 1. Settings → Devices & Services → **+ Add Integration** → search for
    **Louvelite Blinds**.
 2. Enter:
+    - **Hub name** — anything you like (e.g. `Neo Smart Controller`,
+      `Upstairs hub`). Becomes the integration's title; useful if you
+      have more than one hub.
     - **Hub IP address** — e.g. `192.168.1.50`.
     - **Hub ID** — the ID from the Neo app
       (Menu → Controllers → tap the controller). Length varies between
