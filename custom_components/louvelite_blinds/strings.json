@@ -34,6 +34,7 @@
           "add_remote": "Add a remote",
           "remove_remote": "Remove a remote",
           "add_blind": "Add a blind",
+          "edit_blind": "Edit a blind",
           "remove_blind": "Remove a blind",
           "edit_hub": "Edit hub connection"
         }
@@ -75,6 +76,26 @@
           "blind_type": "Blind type",
           "close_time": "Close time (seconds, used for travel estimation)",
           "motor_code": "Motor code (optional, from the Neo app — below the blind code)"
+        }
+      },
+      "edit_blind": {
+        "title": "Edit a blind",
+        "description": "Pick the blind to edit.",
+        "data": {
+          "blind_id": "Blind"
+        }
+      },
+      "edit_blind_form": {
+        "title": "Edit {name}",
+        "description": "Change any of these fields and submit. Identity (the entity's unique id) is preserved, so this won't break existing automations or dashboard tiles.",
+        "data": {
+          "name": "Blind name",
+          "room": "Room (optional)",
+          "remote_id": "Remote",
+          "channel": "Blind code (0-15)",
+          "blind_type": "Blind type",
+          "close_time": "Close time (seconds, used for travel estimation)",
+          "motor_code": "Motor code (optional)"
         }
       },
       "remove_blind": {

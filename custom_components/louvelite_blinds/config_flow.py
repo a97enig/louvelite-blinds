@@ -211,6 +211,7 @@ class LouveliteOptionsFlow(OptionsFlow):
 
     def __init__(self, entry: ConfigEntry) -> None:
         self._entry = entry
+        self._editing_blind_id: str | None = None
 
     @property
     def _remotes(self) -> list[dict[str, Any]]:
@@ -235,6 +236,7 @@ class LouveliteOptionsFlow(OptionsFlow):
                 "add_remote",
                 "remove_remote",
                 "add_blind",
+                "edit_blind",
                 "remove_blind",
                 "edit_hub",
             ],
@@ -393,6 +395,122 @@ class LouveliteOptionsFlow(OptionsFlow):
                 }
             ),
             errors=errors,
+        )
+
+    async def async_step_edit_blind(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        blinds = self._blinds
+        if not blinds:
+            return self.async_abort(reason="no_blinds")
+        remote_labels = {r[CONF_REMOTE_ID]: r[CONF_REMOTE_LABEL] for r in self._remotes}
+        choices = {
+            b[CONF_BLIND_ID]: (
+                f"{b[CONF_NAME]} "
+                f"[{remote_labels.get(b[CONF_REMOTE_ID], '?')} code {b[CONF_CHANNEL]:02d}]"
+            )
+            for b in blinds
+        }
+        if user_input is not None:
+            self._editing_blind_id = user_input[CONF_BLIND_ID]
+            return await self.async_step_edit_blind_form()
+        return self.async_show_form(
+            step_id="edit_blind",
+            data_schema=vol.Schema({vol.Required(CONF_BLIND_ID): vol.In(choices)}),
+        )
+
+    async def async_step_edit_blind_form(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        bid = self._editing_blind_id
+        blinds = self._blinds
+        blind = next((b for b in blinds if b[CONF_BLIND_ID] == bid), None)
+        if blind is None:
+            return self.async_abort(reason="no_blinds")
+
+        remotes = self._remotes
+        if not remotes:
+            return self.async_abort(reason="no_remotes")
+        remote_choices = {
+            r[CONF_REMOTE_ID]: f"{r[CONF_REMOTE_LABEL]} ({r[CONF_PREFIX]})" for r in remotes
+        }
+
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            name = (user_input.get(CONF_NAME) or "").strip()
+            room = (user_input.get(CONF_ROOM) or "").strip()
+            rid = user_input.get(CONF_REMOTE_ID)
+            blind_type = user_input.get(CONF_BLIND_TYPE)
+            motor_code = (user_input.get(CONF_MOTOR_CODE) or "").strip().lower()
+
+            try:
+                channel = int(user_input.get(CONF_CHANNEL))
+            except (TypeError, ValueError):
+                channel = None
+            try:
+                close_time = int(user_input.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME))
+            except (TypeError, ValueError):
+                close_time = DEFAULT_CLOSE_TIME
+
+            if not name:
+                errors[CONF_NAME] = "name_required"
+            if rid not in remote_choices:
+                errors[CONF_REMOTE_ID] = "remote_invalid"
+            if channel is None or channel < MIN_CHANNEL or channel > MAX_CHANNEL:
+                errors[CONF_CHANNEL] = "channel_invalid"
+            if blind_type not in BLIND_TYPES:
+                errors[CONF_BLIND_TYPE] = "type_invalid"
+            if not errors and any(
+                b[CONF_BLIND_ID] != bid
+                and b[CONF_REMOTE_ID] == rid
+                and b[CONF_CHANNEL] == channel
+                for b in blinds
+            ):
+                errors[CONF_CHANNEL] = "blind_exists"
+
+            if not errors:
+                updated = {
+                    **blind,
+                    CONF_NAME: name,
+                    CONF_ROOM: room,
+                    CONF_REMOTE_ID: rid,
+                    CONF_CHANNEL: channel,
+                    CONF_BLIND_TYPE: blind_type,
+                    CONF_CLOSE_TIME: close_time,
+                    CONF_MOTOR_CODE: motor_code,
+                }
+                new_blinds = [updated if b[CONF_BLIND_ID] == bid else b for b in blinds]
+                self._editing_blind_id = None
+                return self._save_options(blinds=new_blinds)
+
+        defaults = user_input or blind
+        return self.async_show_form(
+            step_id="edit_blind_form",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_NAME, default=defaults.get(CONF_NAME, "")): str,
+                    vol.Optional(CONF_ROOM, default=defaults.get(CONF_ROOM, "")): str,
+                    vol.Required(
+                        CONF_REMOTE_ID,
+                        default=defaults.get(CONF_REMOTE_ID, next(iter(remote_choices))),
+                    ): vol.In(remote_choices),
+                    vol.Required(
+                        CONF_CHANNEL, default=defaults.get(CONF_CHANNEL, 1)
+                    ): CHANNEL_SELECTOR,
+                    vol.Required(
+                        CONF_BLIND_TYPE,
+                        default=defaults.get(CONF_BLIND_TYPE, BLIND_TYPE_ROLLER),
+                    ): BLIND_TYPE_SELECTOR,
+                    vol.Required(
+                        CONF_CLOSE_TIME,
+                        default=defaults.get(CONF_CLOSE_TIME, DEFAULT_CLOSE_TIME),
+                    ): CLOSE_TIME_SELECTOR,
+                    vol.Optional(
+                        CONF_MOTOR_CODE,
+                        default=defaults.get(CONF_MOTOR_CODE, ""),
+                    ): str,
+                }
+            ),
+            errors=errors,
+            description_placeholders={"name": blind[CONF_NAME]},
         )
 
     async def async_step_remove_blind(self, user_input: dict[str, Any] | None = None) -> FlowResult:
