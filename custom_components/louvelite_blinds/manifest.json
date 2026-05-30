@@ -1,7 +1,7 @@
 {
   "domain": "louvelite_blinds",
   "name": "Louvelite Blinds (Neo Smart Controller)",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "documentation": "https://github.com/a97enig/louvelite-blinds",
   "issue_tracker": "https://github.com/a97enig/louvelite-blinds/issues",
   "codeowners": ["@a97enig"],

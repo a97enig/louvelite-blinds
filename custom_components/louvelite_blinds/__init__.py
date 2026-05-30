@@ -7,8 +7,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntry
 
 from .const import (
+    CONF_BLIND_ID,
+    CONF_BLINDS,
     CONF_HOST,
     CONF_HUB_ID,
     CONF_PORT,
@@ -56,3 +59,37 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload entities when options change (remote/blind added or removed)."""
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: ConfigEntry, device: DeviceEntry
+) -> bool:
+    """Allow deleting a blind from its device page.
+
+    Each blind's device identifier is `<entry_id>:<blind_id>`. We strip
+    the blind out of the entry's options; the update listener picks it
+    up and reloads, which removes any covers (both rails for TDBU) the
+    device was hosting.
+    """
+    prefix = f"{entry.entry_id}:"
+    blind_id = next(
+        (
+            ident[len(prefix):]
+            for domain, ident in device.identifiers
+            if domain == DOMAIN and ident.startswith(prefix)
+        ),
+        None,
+    )
+    if not blind_id:
+        return False
+
+    blinds = list(entry.options.get(CONF_BLINDS, []))
+    kept = [b for b in blinds if b.get(CONF_BLIND_ID) != blind_id]
+    if len(kept) == len(blinds):
+        # Device isn't backed by anything we know about — treat as removable.
+        return True
+
+    new_options = dict(entry.options)
+    new_options[CONF_BLINDS] = kept
+    hass.config_entries.async_update_entry(entry, options=new_options)
+    return True
